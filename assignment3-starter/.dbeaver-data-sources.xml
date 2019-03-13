@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data-sources>
+	<data-source id="h2_server-1694e610407-1e4a65834f138bf8" provider="generic" driver="h2_server" name="H2 - (MEM) assignment 3" save-password="true" read-only="false">
+		<connection host="localhost" port="9092" server="" database="mem:assignment3-testing" url="jdbc:h2:tcp://localhost:9092/mem:assignment3-testing" user="sa" password="AwUVM1ZMVhJl8w==" type="test">
+		</connection>
+	</data-source>
+	<filters/>
+</data-sources>

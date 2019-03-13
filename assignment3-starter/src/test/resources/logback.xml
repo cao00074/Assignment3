@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+  <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%msg%ex{full}%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger level="debug" additivity="false" name="eclipselink.logging">
+    <appender-ref ref="CONSOLE" />
+  </logger>
+
+  <logger level="error" additivity="false" name="eclipselink.logging.metadata">
+    <appender-ref ref="CONSOLE" />
+  </logger>
+
+  <logger level="info" additivity="false" name="com.algonquincollege.cst8277">
+    <appender-ref ref="CONSOLE" />
+  </logger>
+
+  <root level="error">
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+</configuration>
