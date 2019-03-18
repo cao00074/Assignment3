@@ -38,10 +38,17 @@ public class Address extends ModelBase implements Serializable {
     protected String postal;
     protected String state;
     protected String street;
+    protected Employee employee;
     //protected int addrVersion;
     
     @OneToOne(mappedBy = "address")
-    private Employee employee;
+    public Employee getEmployee() {
+        return employee;
+    }
+    
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
     
     // JPA requires each @Entity class have a default constructor
     public Address() {

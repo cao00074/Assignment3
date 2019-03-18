@@ -17,6 +17,7 @@
 package com.algonquincollege.cst8277.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -42,11 +43,18 @@ public class Project extends ModelBase implements Serializable {
     // TODO - persistent fields
     //protected int proId;
     protected String description;
-    protected String proName;
+    protected String name;
+    protected List<Employee> employees = new ArrayList<>() ;
     //protected int proVersion;
 
-    @ManyToMany
-    protected List<Employee> projectEmployees;
+    @ManyToMany(mappedBy = "projects")
+    public List<Employee> getEmployees(){
+        return employees;
+    }
+    
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
+    }
     
     // JPA requires each @Entity class have a default constructor
     public Project() {
@@ -61,13 +69,13 @@ public class Project extends ModelBase implements Serializable {
         this.description = description;
     }
 
-    public String getProName() {
-        return proName;
+    public String getName() {
+        return name;
     }
 
 
-    public void setProName(String proName) {
-        this.proName = proName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     // Strictly speaking, JPA does not require hashcode() and equals(),

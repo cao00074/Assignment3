@@ -43,14 +43,19 @@ public class Phone extends ModelBase implements Serializable {
     protected String type;
     protected String areaCode;
     protected String phoneNumber;
+    protected Employee employee;
     //protected int phoneVersion;
     
     
     @ManyToOne
-    @JoinColumn(name = "empId", nullable = false)
-    protected Employee employee;
+    @JoinColumn(name = "OWNING_EMP_ID", nullable = false)
+    public Employee getEmployee() {
+        return employee;
+    }
 
-    
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
 
     // JPA requires each @Entity class have a default constructor
     public Phone() {
