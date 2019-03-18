@@ -48,7 +48,7 @@ public class Phone extends ModelBase implements Serializable {
     
     
     @ManyToOne
-    @JoinColumn(name = "EMPLOYEE_ID", nullable = false)
+    @JoinColumn(name = "OWNING_EMP_ID", nullable = false)
     public Employee getEmployee() {
         return employee;
     }
