@@ -65,7 +65,7 @@ public class EmployeeTestSuite implements TestSuiteConstants {
         EntityManager em = emf.createEntityManager();
 
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
-        Employee emp1 = em.find Employee with PK 1
+        Employee emp1 = em.find(Employee.class,1);             //em.find Employee with PK 1
         detachListAppender(eclipselinkSqlLogger, listAppender);
 
         assertNull(emp1);

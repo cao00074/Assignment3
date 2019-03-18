@@ -1,3 +1,4 @@
+
 /********************************************************************egg***m******a**************n************
  * File: Employee.java
  * Course materials (19W) CST 8277
@@ -17,12 +18,19 @@
 package com.algonquincollege.cst8277.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 /**
@@ -48,16 +56,49 @@ public class Employee extends ModelBase implements Serializable {
     // TODO - additional persistent field
     protected String firstName;
     protected String lastName;
-    protected double salary;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id",referencedColumnName = "id" )
+    protected double salary;    
     protected Address address;
+    protected List<Phone> phones = new ArrayList<>();
+    protected List<Project> projects = new ArrayList<>();
+    
+   
  
     // JPA requires each @Entity class have a default constructor
     public Employee() {
         super();
     }
     
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ADDR_ID",referencedColumnName = "id" )
+    public Address getAddress() {
+        return address;
+    }    
+      
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+    
+    @OneToMany(mappedBy = "employee")
+    public List<Phone> getPhones(){
+        return phones;
+    }
+    
+    public void setPhones(List<Phone> phones) {
+        this.phones = phones;
+    }
+    
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "EMPLOYEE_PROJECT",joinColumns = {@JoinColumn(name = "EMPLOYEE_ID")},
+     inverseJoinColumns = {@JoinColumn(name = "PROJECT_ID")} )
+    public List<Project> getProjects(){
+        return projects;
+    }
+    
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
+    
+    @Column(name = "FIRSTNAME")
     public String getFirstName() {
         return firstName;
     }
@@ -65,6 +106,7 @@ public class Employee extends ModelBase implements Serializable {
         this.firstName = firstName;
     }
     
+    @Column(name = "LASTNAME")
     public String getLastName() {
         return lastName;
     }
@@ -72,6 +114,7 @@ public class Employee extends ModelBase implements Serializable {
         this.lastName = lastName;
     }
     
+    @Column(name = "SALARY")
     public double getSalary() {
         return salary;
     }
