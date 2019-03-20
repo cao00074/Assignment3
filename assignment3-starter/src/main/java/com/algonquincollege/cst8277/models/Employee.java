@@ -46,8 +46,14 @@ import javax.persistence.OneToOne;
 @Entity
 @NamedQueries({
     @NamedQuery(
-            name = "findAllEmployeesWithSIm",
-            query="select e from Employee e where e.lastName like :lastNmae")
+            name = "findAllEmployeesWithLastName",
+            query="select e from Employee e where e.lastName like :lastNmae"),
+    @NamedQuery(
+            name = "findHighestSalary",
+            query = "select e from Employee e where e.salary = (select max(e.salary) from Employee e)"),
+    @NamedQuery(
+            name = "deleteEmployee",
+            query = "delete from Employee e where e.id = 1")
 })
 public class Employee extends ModelBase implements Serializable {
     /** explicit set serialVersionUID */
