@@ -12,26 +12,35 @@ import static com.algonquincollege.cst8277.models.TestSuiteConstants.buildEntity
 import static com.algonquincollege.cst8277.models.TestSuiteConstants.detachListAppender;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EmployeeTestSuite implements TestSuiteConstants {
 
     private static final Class<?> _thisClaz = MethodHandles.lookup().lookupClass();
@@ -61,7 +70,7 @@ public class EmployeeTestSuite implements TestSuiteConstants {
     private static final String SELECT_EMPLOYEE_1 =
         "SELECT ID, FIRSTNAME, LASTNAME, SALARY, VERSION, ADDR_ID FROM EMPLOYEE WHERE (ID = ?)";
     @Test
-    public void test_no_Employees_at_start() {
+    public void _01_test_no_Employees_at_start() {
         EntityManager em = emf.createEntityManager();
 
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
@@ -79,16 +88,91 @@ public class EmployeeTestSuite implements TestSuiteConstants {
 
     // C-R-U-D lifecycle
     @Test
-    @Ignore //remove this when TODO is done
-    public void test_create_employee() {
-        // TODO
+  //  @Ignore //remove this when TODO is done
+    public void _02_test_create_employee() {
+        Employee employee1 = new Employee();
+        employee1.setFirstName("FirstName");
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(employee1);
+        em.getTransaction().commit();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+        Root<Employee> rootEmpQuery = cq.from(Employee.class);
+        cq.select(rootEmpQuery);
+        cq.where(cb.and(cb.equal(rootEmpQuery.get(Employee_.firstName),"FirstName")));
+        TypedQuery<Employee> query =em.createQuery(cq);
+        Employee employeeFromDB = query.getSingleResult();
+        
+        System.out.println("id: "+employeeFromDB.getId()+" FN: "+employeeFromDB.getFirstName());
+        
+        assertTrue(employeeFromDB.getId()==1);
+        assertEquals("FirstName", employeeFromDB.getFirstName());
+        em.close();
+    }
+    
+    @Test
+    public void _03_test_read_employee() {
+        EntityManager em = emf.createEntityManager();
+        Employee employee = (Employee) em.createQuery("select e from Employee e where e.id = 1")
+                                         .getSingleResult();
+        assertNotNull(employee);        
+    }
+    
+    @Test
+    public void _04_test_update_employee() {
+               
+        EntityManager em = emf.createEntityManager();
+        Employee employee1 = em.find(Employee.class, 1);
+        employee1.setFirstName("UpdatedFirstName");
+        em.getTransaction().begin();
+        em.persist(employee1);
+        em.getTransaction().commit();
+        
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+        Root<Employee> rootEmpQuery = cq.from(Employee.class);
+        cq.select(rootEmpQuery);
+        cq.where(cb.and(cb.equal(rootEmpQuery.get(Employee_.id),1)));
+        TypedQuery<Employee> query =em.createQuery(cq);
+        Employee employeeFromDB = query.getSingleResult();
+        
+        System.out.println("id: "+employeeFromDB.getId()+" FN: "+employeeFromDB.getFirstName());
+        
+        assertEquals("UpdatedFirstName", employeeFromDB.getFirstName());
+        em.close();
+    }
+    
+    @Test
+    public void _05_test_delete_employee() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        int result = em.createNamedQuery("deleteEmployee").executeUpdate();
+        em.getTransaction().commit();
+        Employee employee = em.find(Employee.class,1);
+       // System.out.println("id: "+employee.getId()+" FN: "+employee.getFirstName()+" result: "+result);
+        assertNull(employee);        
     }
 
     // queries - highest salary?
     @Test
-    @Ignore //remove this when TODO is done
-    public void test_find_employee_by_some_criteria() {
-        // TODO
+    //@Ignore //remove this when TODO is done
+    public void _08_test_find_employee_by_highest_salary() {
+        Employee employee1 = new Employee();
+        employee1.setSalary(600);
+        Employee employee2 = new Employee();
+        employee1.setSalary(1000);
+        
+        
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(employee1);
+        em.persist(employee2);
+        em.getTransaction().commit();
+        Employee highestSalary =(Employee)em.createNamedQuery("findHighestSalary").getSingleResult();
+        
+        assertTrue(highestSalary.getSalary()==1000);      
+        em.close();
     }
 
     @AfterClass
