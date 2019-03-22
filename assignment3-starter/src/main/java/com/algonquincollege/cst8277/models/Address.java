@@ -19,6 +19,7 @@ package com.algonquincollege.cst8277.models;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -41,7 +42,7 @@ public class Address extends ModelBase implements Serializable {
     protected Employee employee;
     //protected int addrVersion;
     
-    @OneToOne(mappedBy = "address")
+    @OneToOne(mappedBy = "address", cascade={CascadeType.ALL})
     public Employee getEmployee() {
         return employee;
     }

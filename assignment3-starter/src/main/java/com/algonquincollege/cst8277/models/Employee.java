@@ -68,8 +68,8 @@ public class Employee extends ModelBase implements Serializable {
         super();
     }
     
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ADDR_ID",referencedColumnName = "id" )
+    @OneToOne()
+    @JoinColumn(name = "ADDR_ID",referencedColumnName = "id")
     public Address getAddress() {
         return address;
     }    
