@@ -32,6 +32,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * The Employee class demonstrates several JPA features:
@@ -49,6 +50,7 @@ import javax.persistence.OneToOne;
             name = "findAllEmployeesWithSIm",
             query="select e from Employee e where e.lastName like :lastNmae")
 })
+@Table(name = "employee")
 public class Employee extends ModelBase implements Serializable {
     /** explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
