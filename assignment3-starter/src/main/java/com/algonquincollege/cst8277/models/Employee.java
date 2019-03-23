@@ -58,7 +58,8 @@ public class Employee extends ModelBase implements Serializable {
     // TODO - additional persistent field
     protected String firstName;
     protected String lastName;
-    protected double salary;    
+    protected double salary;   
+    protected int addr_id;
     protected Address address;
     protected List<Phone> phones = new ArrayList<>();
     protected List<Project> projects = new ArrayList<>();
@@ -124,10 +125,20 @@ public class Employee extends ModelBase implements Serializable {
         this.salary = salary;
     }
     
+    @Column(name = "ADDR_ID")
+    public int getAddr_id() {
+        return addr_id;
+    }
+
+    public void setAddr_id(int addr_id) {
+        this.addr_id = addr_id;
+    }
     
     
     // Strictly speaking, JPA does not require hashcode() and equals(),
     // but it is a good idea to have one that tests using the PK (@Id) field
+
+
 
     @Override
     public int hashCode() {
