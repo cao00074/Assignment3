@@ -81,10 +81,10 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
             "UPDATE address SET STREET = ?, VERSION = ? WHERE ((ID = ?) AND (VERSION = ?))";
     private static final String UPDATE_EMPLOYEE =
            "UPDATE employee SET ADDR_ID = ?, VERSION = ? WHERE ((ID = ?) AND (VERSION = ?))";
-//    private static final String DELETE_EMPLOYEE_FROM_EMP_PROJ = 
-//            "DELETE FROM EMP_PROJ WHERE (EMP_ID = ?)";
-//    private static final String DELETE_EMPLOYEE_1 = 
-//            "DELETE FROM EMPLOYEE WHERE ((ID = ?) AND (VERSION = ?))";
+    private static final String DELETE_EMPLOYEE_FROM_EMP_PROJ = 
+            "DELETE FROM EMP_PROJ WHERE (EMP_ID = ?)";
+    private static final String DELETE_EMPLOYEE = 
+            "DELETE FROM employee WHERE ((ID = ?) AND (VERSION = ?))";
     private static final String DELETE_ADDRESS = 
             "DELETE FROM address WHERE ((ID = ?) AND (VERSION = ?))";
     private static final String INSERT_EMPLOYEE =
@@ -145,7 +145,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     }
     
     @Test
-    public void test_03_delete_address() {
+    public void test_03_delete_non_relational_address() {
         EntityManager em = emf.createEntityManager();
 
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
@@ -255,6 +255,34 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
                 startsWith(UPDATE_EMPLOYEE));
         em.close();
     }
+   
+    
+    @Test
+    public void test_07_delete_relational_address() {
+        EntityManager em = emf.createEntityManager();
+
+        ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        Address addr = em.find(Address.class,3);             //em.find Address with PK 1
+        em.remove(addr);
+        tx.commit();
+        addr = em.find(Address.class, 3);
+        detachListAppender(eclipselinkSqlLogger, listAppender);        
+        assertNull(addr);
+        List<ILoggingEvent> loggingEvents = listAppender.list;
+        assertEquals(4, loggingEvents.size());
+        
+        assertThat(loggingEvents.get(0).getMessage(),
+                startsWith(DELETE_EMPLOYEE_FROM_EMP_PROJ));
+        assertThat(loggingEvents.get(1).getMessage(),
+                startsWith(DELETE_EMPLOYEE));     
+        assertThat(loggingEvents.get(2).getMessage(),
+                startsWith(DELETE_ADDRESS));
+        assertThat(loggingEvents.get(3).getMessage(),
+                startsWith(SELECT_ADDRESS));      
+        em.close();
+    }
     
     @AfterClass
     public static void oneTimeTearDown() {
@@ -267,4 +295,27 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
         }
     }
 
-}
+}//    @Test
+//    //  @Ignore //remove this when TODO is done
+//      public void _01_test_create_address() {
+//          Address address1 = new Address();
+//          address1.setCity("Ottawa");
+//          EntityManager em = emf.createEntityManager();
+//          em.getTransaction().begin();
+//          em.persist(address1);
+//          em.getTransaction().commit();
+//          CriteriaBuilder cb = em.getCriteriaBuilder();
+//          CriteriaQuery<Address> cq = cb.createQuery(Address.class);
+//          Root<Address> rootEmpQuery = cq.from(Address.class);
+//          cq.select(rootEmpQuery);
+//          cq.where(cb.and(cb.equal(rootEmpQuery.get(Address_.city),"Ottawa")));
+//          TypedQuery<Address> query =em.createQuery(cq);
+//          Address addressFromDB = query.getSingleResult();
+//          
+//          System.out.println("id: "+addressFromDB.getId()+" FN: "+addressFromDB.getCity());
+//          
+//          assertTrue(addressFromDB.getId()==2);
+//          em.close();
+//      }
+
+ 
