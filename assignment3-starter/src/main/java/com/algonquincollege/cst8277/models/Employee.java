@@ -32,6 +32,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * The Employee class demonstrates several JPA features:
@@ -55,6 +56,7 @@ import javax.persistence.OneToOne;
             name = "deleteEmployee",
             query = "delete from Employee e where e.id = 1")
 })
+@Table(name = "employee")
 public class Employee extends ModelBase implements Serializable {
     /** explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
@@ -62,7 +64,7 @@ public class Employee extends ModelBase implements Serializable {
     // TODO - additional persistent field
     protected String firstName;
     protected String lastName;
-    protected double salary;    
+    protected double salary;   
     protected Address address;
     protected List<Phone> phones = new ArrayList<>();
     protected List<Project> projects = new ArrayList<>();
@@ -132,6 +134,8 @@ public class Employee extends ModelBase implements Serializable {
     
     // Strictly speaking, JPA does not require hashcode() and equals(),
     // but it is a good idea to have one that tests using the PK (@Id) field
+
+
 
     @Override
     public int hashCode() {

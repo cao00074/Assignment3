@@ -20,7 +20,10 @@ package com.algonquincollege.cst8277.models;
 import java.io.Serializable;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -56,7 +59,7 @@ public class Address extends ModelBase implements Serializable {
         super();
     }
 
- 
+    @Column(name = "CITY")
     public String getCity() {
         return city;
     }
@@ -66,7 +69,7 @@ public class Address extends ModelBase implements Serializable {
         this.city = city;
     }
 
-
+    @Column(name = "COUNTRY")
     public String getCountry() {
         return country;
     }
@@ -76,17 +79,17 @@ public class Address extends ModelBase implements Serializable {
         this.country = country;
     }
 
-
+    @Column(name = "POSTAL")
     public String getPostal() {
         return postal;
     }
 
-
+    
     public void setPostal(String postal) {
         this.postal = postal;
     }
 
-
+    @Column(name = "STATE")
     public String getState() {
         return state;
     }
@@ -96,7 +99,7 @@ public class Address extends ModelBase implements Serializable {
         this.state = state;
     }
 
-
+    @Column(name = "STREET")
     public String getStreet() {
         return street;
     }
