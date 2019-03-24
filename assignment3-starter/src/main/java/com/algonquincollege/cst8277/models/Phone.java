@@ -42,9 +42,10 @@ public class Phone extends ModelBase implements Serializable {
     //protected int id;
     protected String type;
     protected String areaCode;
-    protected String phoneNumber;
+    protected String phoneNumber;    
+   
     protected Employee employee;
-    //protected int phoneVersion;
+    
     
     
     @ManyToOne
@@ -82,7 +83,7 @@ public class Phone extends ModelBase implements Serializable {
         this.areaCode = areaCode;
     }
 
-  
+   
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -90,7 +91,8 @@ public class Phone extends ModelBase implements Serializable {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-    
+       
+   
 
     @Override
     public int hashCode() {

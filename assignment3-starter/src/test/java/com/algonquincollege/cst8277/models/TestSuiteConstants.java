@@ -8,6 +8,9 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.DefaultSessionLog;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
@@ -22,6 +25,7 @@ public interface TestSuiteConstants {
     static EntityManagerFactory buildEntityManagerFactory(String testSuiteSql) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE, META_INF_SQL_PREFIX + testSuiteSql + META_INF_SQL_SUFFIX);
+        AbstractSessionLog.setLog(new DefaultSessionLog());
         return Persistence.createEntityManagerFactory(ASSIGNMENT3_PU_NAME, properties);
     }
 
