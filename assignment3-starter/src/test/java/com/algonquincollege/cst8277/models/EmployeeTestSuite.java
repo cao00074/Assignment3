@@ -68,7 +68,7 @@ public class EmployeeTestSuite implements TestSuiteConstants {
     }
 
     private static final String SELECT_EMPLOYEE_1 =
-        "SELECT ID, FIRSTNAME, LASTNAME, SALARY, VERSION, ADDR_ID FROM EMPLOYEE WHERE (ID = ?)";
+        "SELECT ID, FIRSTNAME, LASTNAME, SALARY, VERSION, ADDR_ID FROM employee WHERE (ID = ?)";
     @Test
     public void _01_test_no_Employees_at_start() {
         EntityManager em = emf.createEntityManager();
