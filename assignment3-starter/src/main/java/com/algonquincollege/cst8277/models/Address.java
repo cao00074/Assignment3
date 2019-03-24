@@ -31,6 +31,14 @@ import javax.persistence.Table;
  * Simple Address class - it uses a generated Id.
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "findAllEmployeesWithPostal",
+            query="select a from Address a where a.postal like :postal"),
+    @NamedQuery(
+            name = "findHighestSalary",
+            query = "select e from Employee e where e.salary = (select max(e.salary) from Employee e)")
+})
 @Table(name = "address")
 public class Address extends ModelBase implements Serializable {
     /** explicit set serialVersionUID */
