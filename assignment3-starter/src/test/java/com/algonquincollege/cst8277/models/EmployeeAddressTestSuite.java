@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import org.junit.runners.MethodSorters;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -32,6 +33,7 @@ import javax.persistence.metamodel.Metamodel;
 import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EmployeeAddressTestSuite implements TestSuiteConstants {
 
     private static final Class<?> _thisClaz = MethodHandles.lookup().lookupClass();
@@ -76,7 +79,8 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
             "SELECT ID, FIRSTNAME, LASTNAME, SALARY, VERSION, ADDR_ID FROM employee WHERE (ID = ?)";
     private static final String UPDATE_ADDRESS = 
             "UPDATE address SET STREET = ?, VERSION = ? WHERE ((ID = ?) AND (VERSION = ?))";
-    
+    private static final String UPDATE_EMPLOYEE =
+           "UPDATE employee SET ADDR_ID = ?, VERSION = ? WHERE ((ID = ?) AND (VERSION = ?))";
 //    private static final String DELETE_EMPLOYEE_FROM_EMP_PROJ = 
 //            "DELETE FROM EMP_PROJ WHERE (EMP_ID = ?)";
 //    private static final String DELETE_EMPLOYEE_1 = 
@@ -86,7 +90,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     private static final String INSERT_EMPLOYEE =
             "INSERT INTO employee (ID, FIRSTNAME, LASTNAME, SALARY, VERSION, ADDR_ID) VALUES (?, ?, ?, ?, ?, ?)";   
     @Test
-    public void test_address_not_empty_at_start() {
+    public void test_01_address_not_empty_at_start() {
         EntityManager em = emf.createEntityManager();
 
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
@@ -105,7 +109,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     }
     
     @Test
-    public void test_insert_address() {
+    public void test_02_insert_address() {
         
         EntityManager em = emf.createEntityManager();
         
@@ -141,7 +145,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     }
     
     @Test
-    public void test_delete_address() {
+    public void test_03_delete_address() {
         EntityManager em = emf.createEntityManager();
 
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
@@ -164,7 +168,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     }
  
     @Test
-    public void test_insert_employee() {
+    public void test_04_insert_employee() {
         
         EntityManager em = emf.createEntityManager();
         
@@ -200,7 +204,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     }
     
     @Test
-    public void test_update_address() {
+    public void test_05_update_address() {
         
         EntityManager em = emf.createEntityManager();
         
@@ -224,25 +228,31 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
         em.close();
     }
     
+
     @Test
-    public void test_update_employee() {
+    public void test_06_update_employee() {
         EntityManager em = emf.createEntityManager();
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         Employee emp = em.find(Employee.class, 1);
-        emp.setAddr_id(3);
-        tx.commit();        
+        Address addr = em.find(Address.class, 3);
+        
+        emp.setAddress(addr);
+        tx.commit();
+        em.refresh(addr);
+        //System.out.println(emp.getAddress().get);
         detachListAppender(eclipselinkSqlLogger, listAppender);
-        String postalCode = emp.getAddress().getPostal();        
+        //String postalCode = emp.getAddress().getPostal();        
         
-        assertEquals("K0A 1L0", postalCode);
-        
-//        List<ILoggingEvent> loggingEvents = listAppender.list;
-//        assertEquals(1, loggingEvents.size());
-//        assertThat(loggingEvents.get(0).getMessage(),
-//                startsWith(UPDATE_ADDRESS));
-        
+
+        assertEquals(addr.getEmployee(), emp);
+        List<ILoggingEvent> loggingEvents = listAppender.list;
+        assertEquals(5, loggingEvents.size());
+//        assertThat(loggingEvents.get(2).getMessage(),
+//                startsWith(SELECT_ADDRESS));
+        assertThat(loggingEvents.get(2).getMessage(),
+                startsWith(UPDATE_EMPLOYEE));
         em.close();
     }
     
