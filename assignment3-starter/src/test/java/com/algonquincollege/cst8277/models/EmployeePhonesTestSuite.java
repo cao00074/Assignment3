@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -32,6 +31,7 @@ import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
@@ -92,13 +92,14 @@ public class EmployeePhonesTestSuite implements TestSuiteConstants {
     }
 
     @Test
-    public void _02_test_create_phone() {        
+    public void _02_test_create_one_phone_to_employee() {        
         EntityManager em = emf.createEntityManager();
         
         Employee employee = em.find(Employee.class,10); 
         Phone phone1 = new Phone();
         phone1.setPhoneNumber("613-123-4567");
         phone1.setEmployee(employee);
+        phone1.setVersion(1);
         
         em.getTransaction().begin();
         em.persist(phone1);
@@ -119,7 +120,31 @@ public class EmployeePhonesTestSuite implements TestSuiteConstants {
     }
     
     @Test
-    public void _03_test_read_phone() {        
+    public void _03_test_create_two_phones_to_employee() {        
+        EntityManager em = emf.createEntityManager();
+        
+        Employee employee = em.find(Employee.class,20); 
+        Phone phone1 = new Phone();
+        phone1.setPhoneNumber("343-123-4567");
+        phone1.setEmployee(employee);
+        phone1.setVersion(1);
+       
+        Phone phone2 = new Phone();
+        phone2.setPhoneNumber("343-789-2345");
+        phone2.setEmployee(employee);
+        phone2.setVersion(1);
+        
+        em.getTransaction().begin();
+        em.persist(phone1);
+        em.persist(phone2);
+        em.getTransaction().commit();
+        
+        assertEquals(2, employee.getPhones().size());        
+        em.close();
+    }
+     
+    @Test
+    public void _04_test_read_phone() {        
         EntityManager em = emf.createEntityManager();
         
         Phone phone = em.find(Phone.class,1);       
@@ -130,7 +155,28 @@ public class EmployeePhonesTestSuite implements TestSuiteConstants {
     }
     
     @Test
-    public void _04_test_update_phone() {        
+    public void _05_test_read_phone_by_employee() {        
+        EntityManager em = emf.createEntityManager();
+        Employee employee = em.find(Employee.class, 20);
+        
+        List<Phone> phones = employee.getPhones();      
+        
+        assertEquals(2, phones.size());
+        em.close();
+    }
+    
+    @Test
+    public void _06_test_read_empoyee_by_phone() {        
+        EntityManager em = emf.createEntityManager();
+        Phone phone = (Phone) em.createNamedQuery("findPhoneWithNumber").setParameter("phoneNumber","343-123-4567").getSingleResult();
+        Employee employee = phone.getEmployee();
+        
+        assertEquals(20, employee.id);
+        em.close();
+    }
+    
+    @Test
+    public void _07_test_update_phone() {        
         EntityManager em = emf.createEntityManager();
         
         Phone phone = em.find(Phone.class,1);   
@@ -144,25 +190,76 @@ public class EmployeePhonesTestSuite implements TestSuiteConstants {
                 .getSingleResult();
         
         assertEquals("New Type", phone2.getType());
-        assertEquals("613-123-4567", phone.getPhoneNumber());
+        assertEquals(2, phone.getVersion());
         em.close();
     }
     
     @Test
-    public void _05_test_delete_phone() {        
+    public void _08_test_update_employee() {        
         EntityManager em = emf.createEntityManager();
         
-        Phone phone = em.find(Phone.class,1);      
+        Employee employee = em.find(Employee.class, 10); 
+        employee.setLastName("New Last Name");
        
         em.getTransaction().begin();
-        em.remove(phone);
-        em.getTransaction().commit();
-        Phone phone2 = em.find(Phone.class, 1);
-               
-        assertNull(phone2);      
+        em.persist(employee);
+        em.getTransaction().commit();        
+        em.refresh(employee);     
        
+        
+        assertEquals("New Last Name", employee.getLastName());
+        assertEquals(2, employee.getVersion());
         em.close();
     }
+    
+    @Test
+    public void _09_test_delete_phone() {        
+        EntityManager em = emf.createEntityManager();
+        Employee employee = em.find(Employee.class, 10);
+        int howManyPhones = employee.getPhones().size();
+        
+        em.getTransaction().begin();
+        Phone phone = em.find(Phone.class,1);
+        em.remove(phone);
+        em.getTransaction().commit();
+        
+        Phone deletedPhone = em.find(Phone.class, 1);
+        em.refresh(employee);
+        
+        assertNull(deletedPhone); 
+        assertEquals(howManyPhones-1, employee.getPhones().size());
+        em.close();
+    }
+    
+    
+    @Test
+    public void _10_test_delete_employee() {        
+        EntityManager em = emf.createEntityManager();
+        Phone phone = em.find(Phone.class,2);
+        int whoHasThisPhone = phone.getEmployee().getId();
+       
+        em.getTransaction().begin();
+        Employee employee = em.find(Employee.class, whoHasThisPhone);
+        em.remove(employee);
+        em.getTransaction().commit();
+        employee = em.find(Employee.class, whoHasThisPhone);
+        phone = em.find(Phone.class,2);
+               
+        assertNull(phone);
+        assertNull(employee);
+        em.close();
+    }
+    
+//    @Test
+//    public void _11_test_get_all_phones_with_employee() {        
+//        EntityManager em = emf.createEntityManager();
+//        Employee employee = em.find(Employee.class, 20);
+//        List<Phone> phones = em.createNamedQuery("findAllPhoneWithEmployee").setParameter("employee", employee).getResultList();
+//        
+//        assertEquals(2, phones.size());        
+//        em.close();
+//    }
+    
     
 
     @AfterClass
