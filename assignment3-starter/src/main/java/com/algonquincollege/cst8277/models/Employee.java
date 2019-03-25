@@ -47,8 +47,8 @@ import javax.persistence.Table;
 @Entity
 @NamedQueries({
     @NamedQuery(
-            name = "findAllEmployeesWithLastName",
-            query="select e from Employee e where e.lastName like :lastNmae"),
+            name = "findEmployeesWithLastName",
+            query="select e from Employee e where e.lastName like :lastName"),
     @NamedQuery(
             name = "findHighestSalary",
             query = "select e from Employee e where e.salary = (select max(e.salary) from Employee e)"),
@@ -86,7 +86,7 @@ public class Employee extends ModelBase implements Serializable {
         this.address = address;
     }
     
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "employee",orphanRemoval = true)
     public List<Phone> getPhones(){
         return phones;
     }

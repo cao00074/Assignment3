@@ -22,6 +22,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -33,6 +35,14 @@ import javax.persistence.Table;
  * </ul>
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "findPhoneWithNumber",
+            query="select p from Phone p where p.phoneNumber like :phoneNumber"),
+//    @NamedQuery(
+//            name = "findAllPhoneWithEmployee",
+//            query="select p from Phone p where p.em like :employee")
+})
 @Table(name = "phone")
 public class Phone extends ModelBase implements Serializable {
     /** explicit set serialVersionUID */
@@ -48,7 +58,7 @@ public class Phone extends ModelBase implements Serializable {
     
     
     @ManyToOne
-    @JoinColumn(name = "OWNING_EMP_ID", nullable = false)
+    @JoinColumn(name = "OWNING_EMP_ID")
     public Employee getEmployee() {
         return employee;
     }
