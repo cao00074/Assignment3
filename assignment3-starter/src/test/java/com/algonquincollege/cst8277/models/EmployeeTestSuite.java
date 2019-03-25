@@ -91,6 +91,7 @@ public class EmployeeTestSuite implements TestSuiteConstants {
   //  @Ignore //remove this when TODO is done
     public void _02_test_create_employee() {
         Employee employee1 = new Employee();
+        employee1.setId(1);
         employee1.setFirstName("FirstName");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -100,14 +101,13 @@ public class EmployeeTestSuite implements TestSuiteConstants {
         CriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
         Root<Employee> rootEmpQuery = cq.from(Employee.class);
         cq.select(rootEmpQuery);
-        cq.where(cb.and(cb.equal(rootEmpQuery.get(Employee_.firstName),"FirstName")));
+        cq.where(cb.and(cb.equal(rootEmpQuery.get(Employee_.id),1)));
         TypedQuery<Employee> query =em.createQuery(cq);
         Employee employeeFromDB = query.getSingleResult();
         
         System.out.println("id: "+employeeFromDB.getId()+" FN: "+employeeFromDB.getFirstName());
         
-        assertTrue(employeeFromDB.getId()==1);
-        assertEquals("FirstName", employeeFromDB.getFirstName());
+        assertTrue(employeeFromDB.getFirstName()=="FirstName");
         em.close();
     }
     
@@ -136,8 +136,7 @@ public class EmployeeTestSuite implements TestSuiteConstants {
         cq.where(cb.and(cb.equal(rootEmpQuery.get(Employee_.id),1)));
         TypedQuery<Employee> query =em.createQuery(cq);
         Employee employeeFromDB = query.getSingleResult();
-        
-        System.out.println("id: "+employeeFromDB.getId()+" FN: "+employeeFromDB.getFirstName());
+       // System.out.println("id: "+employeeFromDB.getId()+" FN: "+employeeFromDB.getFirstName());
         
         assertEquals("UpdatedFirstName", employeeFromDB.getFirstName());
         em.close();
@@ -147,17 +146,35 @@ public class EmployeeTestSuite implements TestSuiteConstants {
     public void _05_test_delete_employee() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        int result = em.createNamedQuery("deleteEmployee").executeUpdate();
+        em.createNamedQuery("deleteEmployee").executeUpdate();
         em.getTransaction().commit();
         Employee employee = em.find(Employee.class,1);
        // System.out.println("id: "+employee.getId()+" FN: "+employee.getFirstName()+" result: "+result);
         assertNull(employee);        
     }
+    
+    @Test
+    public void _06_test_delete_employee2() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Employee employeeNew = new Employee();
+        employeeNew.setId(2);
+        employeeNew.setLastName("Cui");
+        em.persist(employeeNew);
+        em.getTransaction().commit();
+        Employee employee = em.find(Employee.class,2);
+        assertNotNull(employee);
+        em.getTransaction().begin();
+        em.remove(employee);
+        em.getTransaction().commit();
+        employee = em.find(Employee.class,2);
+       // System.out.println("id: "+employee.getId()+" FN: "+employee.getFirstName()+" result: "+result);
+        assertNull(employee);        
+    }
 
     // queries - highest salary?
-    @Test
-    //@Ignore //remove this when TODO is done
-    public void _08_test_find_employee_by_highest_salary() {
+    @Test    
+    public void _07_test_find_employee_with_highest_salary() {
         Employee employee1 = new Employee();
         employee1.setSalary(600);
         Employee employee2 = new Employee();
@@ -174,6 +191,26 @@ public class EmployeeTestSuite implements TestSuiteConstants {
         assertTrue(highestSalary.getSalary()==1000);      
         em.close();
     }
+    
+    @Test    
+    public void _08_test_find_employee_with_last_name() {
+        Employee employee1 = new Employee();
+        employee1.setLastName("Li");
+        Employee employee2 = new Employee();
+        employee2.setLastName("Li");
+        
+        
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(employee1);
+        em.persist(employee2);
+        em.getTransaction().commit();
+        List<Employee> sameLastName =(List<Employee>)em.createNamedQuery("findEmployeesWithLastName").setParameter("lastName", "Li").getResultList();
+        
+        assertTrue(sameLastName.size()==2);        
+        em.close();
+    }
+   
 
     @AfterClass
     public static void oneTimeTearDown() {
