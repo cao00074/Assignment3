@@ -34,10 +34,10 @@ import javax.persistence.Table;
 @NamedQueries({
     @NamedQuery(
             name = "findAllEmployeesWithPostal",
-            query="select a from Address a where a.postal like :postal"),
+            query = "select a from Address a where a.postal like :postal"),
     @NamedQuery(
-            name = "findHighestSalary",
-            query = "select e from Employee e where e.salary = (select max(e.salary) from Employee e)")
+            name = "countAddress",
+            query = "select count(a) from Address a")
 })
 @Table(name = "address")
 public class Address extends ModelBase implements Serializable {
