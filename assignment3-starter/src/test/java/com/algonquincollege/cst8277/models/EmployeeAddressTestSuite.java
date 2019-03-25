@@ -15,6 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.runners.MethodSorters;
 
 import java.lang.invoke.MethodHandles;
@@ -89,6 +91,8 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
             "DELETE FROM address WHERE ((ID = ?) AND (VERSION = ?))";
     private static final String INSERT_EMPLOYEE =
             "INSERT INTO employee (ID, FIRSTNAME, LASTNAME, SALARY, VERSION, ADDR_ID) VALUES (?, ?, ?, ?, ?, ?)";   
+    private static final String COUNT_ADDRESS = 
+            "SELECT COUNT(ID) FROM address";
     @Test
     public void test_01_address_not_empty_at_start() {
         EntityManager em = emf.createEntityManager();
@@ -122,23 +126,24 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     }
     
     @Test
-    public void test_03_find_employee_with_postal() {
+    public void test_03_find_employee_by_postal() {
         EntityManager em = emf.createEntityManager();
-        ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
-        Address addr = em.find(Address.class,1);             //em.find Address with PK 1 and any its dependent entity
+        ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);         
         detachListAppender(eclipselinkSqlLogger, listAppender);
-        String postal = addr.getPostal();
+
+        Query query = em.createNamedQuery("findAllEmployeesWithPostal");
+        query.setParameter("postal", "K2X 5A1");
+        Address addr = (Address) query.getSingleResult();
+        Employee emp = addr.getEmployee();
+        assertTrue(emp.getFirstName().equals("Mike"));
         
-        CriteriaQuery<Address> cq = cb.createQuery(Address.class);
-        Root<Address> root = cq.from(Address.class);
-        cq.select(root);
-        cq.where(cb.and(cb.equal(rootEmpQuery.get(Employee_.firstName),"FirstName")));
-        TypedQuery<Employee> query =em.createQuery(cq);
-        Employee employeeFromDB = query.getSingleResult();
+        List<ILoggingEvent> loggingEvents = listAppender.list;
+        assertEquals(0, loggingEvents.size());
+     
     }
     
     @Test
-    public void test_03_insert_address() {
+    public void test_04_insert_address_belongs_to_employee() {
         
         EntityManager em = emf.createEntityManager();
         
@@ -158,10 +163,11 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
         query.executeUpdate();
         tx.commit();
         Address addr = em.find(Address.class,2);
+        Employee emp = addr.getEmployee();
         detachListAppender(eclipselinkSqlLogger, listAppender);
              
         assertNotNull(addr);
-        
+        assertNull(emp);
         List<ILoggingEvent> loggingEvents = listAppender.list;
         assertEquals(3, loggingEvents.size());
         assertThat(loggingEvents.get(0).getMessage(),
@@ -174,7 +180,29 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     }
     
     @Test
-    public void test_04_delete_non_relational_address() {
+    public void test_05_total_address() {
+        EntityManager em = emf.createEntityManager();
+        
+        ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<Address> cq = cb.createQuery(Address.class);
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        Query query = em.createNamedQuery("countAddress");
+        long count = (long) query.getSingleResult();
+        tx.commit();
+        detachListAppender(eclipselinkSqlLogger, listAppender);        
+    
+        assertEquals(3, count);
+        List<ILoggingEvent> loggingEvents = listAppender.list;
+        assertEquals(1, loggingEvents.size());       
+        assertThat(loggingEvents.get(0).getMessage(),
+                startsWith(COUNT_ADDRESS));   
+        em.close();
+    }
+    
+    @Test
+    public void test_06_delete_non_relational_address() {
         EntityManager em = emf.createEntityManager();
 
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
@@ -197,7 +225,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     }
  
     @Test
-    public void test_05_insert_employee() {
+    public void test_07_insert_employee() {
         
         EntityManager em = emf.createEntityManager();
         
@@ -233,7 +261,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     }
     
     @Test
-    public void test_06_update_address() {
+    public void test_08_update_address() {
         
         EntityManager em = emf.createEntityManager();
         
@@ -259,7 +287,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
     
 
     @Test
-    public void test_07_update_employee() {
+    public void test_09_update_employee() {
         EntityManager em = emf.createEntityManager();
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
         EntityTransaction tx = em.getTransaction();
@@ -287,7 +315,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
    
     
     @Test
-    public void test_08_delete_relational_address() {
+    public void test_10_delete_relational_address() {
         EntityManager em = emf.createEntityManager();
 
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
@@ -312,6 +340,8 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
                 startsWith(SELECT_ADDRESS));      
         em.close();
     }
+    
+
     
     @AfterClass
     public static void oneTimeTearDown() {
