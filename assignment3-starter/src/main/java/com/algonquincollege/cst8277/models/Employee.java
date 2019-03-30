@@ -96,8 +96,8 @@ public class Employee extends ModelBase implements Serializable {
     }
     
     @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "EMP_PROJ",joinColumns = {@JoinColumn(name = "EMP_ID")},
-     inverseJoinColumns = {@JoinColumn(name = "PROJ_ID")} )
+    @JoinTable(name = "EMP_PROJ",joinColumns = {@JoinColumn(name = "EMP_ID", nullable = false)},
+     inverseJoinColumns = {@JoinColumn(name = "PROJ_ID", nullable = false)} )
     public List<Project> getProjects(){
         return projects;
     }
