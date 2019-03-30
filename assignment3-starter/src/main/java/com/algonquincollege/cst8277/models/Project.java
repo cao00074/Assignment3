@@ -19,31 +19,19 @@ package com.algonquincollege.cst8277.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-
-
 
 /**
  * The Project class demonstrates:
  * <ul>
  * <li>Generated Id
  * <li>Version locking
- * <li>ManyToMany mapping
+ * <li>ManyToMany mapping with Employee
  * </ul>
  */
 @Entity
-@NamedQueries({
-        @NamedQuery(name = "countProject",       
-            query = "select count(p) from Project p"),
-        @NamedQuery(name = "countEmployee",       
-            query = "select count(e) from Employee e")
-})
 @Table(name = "project")
 public class Project extends ModelBase implements Serializable {
     /** explicit set serialVersionUID */
@@ -69,7 +57,6 @@ public class Project extends ModelBase implements Serializable {
     public Project() {
     }
 
-    @Column(name = "DESCRIPTION")
     public String getDescription() {
         return description;
     }
@@ -79,7 +66,6 @@ public class Project extends ModelBase implements Serializable {
         this.description = description;
     }
 
-    @Column(name = "NAME")
     public String getName() {
         return name;
     }
