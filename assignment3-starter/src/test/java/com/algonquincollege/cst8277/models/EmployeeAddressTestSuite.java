@@ -26,11 +26,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.Metamodel;
 
 import org.h2.tools.Server;
 import org.junit.AfterClass;
@@ -327,6 +322,32 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
         em.close();
     }
     
+    @Test
+    public void test_10_delete_employee() {
+        EntityManager em = emf.createEntityManager();
+       
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        Address addr = em.find(Address.class,3);             //em.find Address with PK 1
+        em.remove(addr);
+        ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
+        tx.commit();        
+        detachListAppender(eclipselinkSqlLogger, listAppender);  
+        addr = em.find(Address.class, 3);
+      
+        assertNull(addr);
+        List<ILoggingEvent> loggingEvents = listAppender.list;
+        assertEquals(3, loggingEvents.size());
+        
+        assertThat(loggingEvents.get(0).getMessage(),
+                startsWith(DELETE_EMPLOYEE_FROM_EMP_PROJ));
+        assertThat(loggingEvents.get(1).getMessage(),
+                startsWith(DELETE_EMPLOYEE));     
+        assertThat(loggingEvents.get(2).getMessage(),
+                startsWith(DELETE_ADDRESS));
+        em.close();
+    }
+    
 
     
     @AfterClass
@@ -340,27 +361,6 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
         }
     }
 
-}//    @Test
-//    //  @Ignore //remove this when TODO is done
-//      public void _01_test_create_address() {
-//          Address address1 = new Address();
-//          address1.setCity("Ottawa");
-//          EntityManager em = emf.createEntityManager();
-//          em.getTransaction().begin();
-//          em.persist(address1);
-//          em.getTransaction().commit();
-//          CriteriaBuilder cb = em.getCriteriaBuilder();
-//          CriteriaQuery<Address> cq = cb.createQuery(Address.class);
-//          Root<Address> rootEmpQuery = cq.from(Address.class);
-//          cq.select(rootEmpQuery);
-//          cq.where(cb.and(cb.equal(rootEmpQuery.get(Address_.city),"Ottawa")));
-//          TypedQuery<Address> query =em.createQuery(cq);
-//          Address addressFromDB = query.getSingleResult();
-//          
-//          System.out.println("id: "+addressFromDB.getId()+" FN: "+addressFromDB.getCity());
-//          
-//          assertTrue(addressFromDB.getId()==2);
-//          em.close();
-//      }
+}
 
  
