@@ -1,2 +1,4 @@
 /target/
 /.classpath
+/hs_err_pid3120.log
+/pom.xml
