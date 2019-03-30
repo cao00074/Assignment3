@@ -2,7 +2,7 @@
  * File: Phone.java
  * Course materials (19W) CST 8277
  * @author Mike Norman
- * (Modified) @date 2019 03
+ * (Modified by Chenxiao Cui and Lei Cao) @date 2019 03
  *
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
@@ -31,17 +31,14 @@ import javax.persistence.Table;
  * <ul>
  * <li>Generated Id
  * <li>Version locking
- * <li>ManyToOne mapping
+ * <li>ManyToOne mapping with Employee
  * </ul>
  */
 @Entity
 @NamedQueries({
     @NamedQuery(
             name = "findPhoneWithNumber",
-            query="select p from Phone p where p.phoneNumber like :phoneNumber"),
-//    @NamedQuery(
-//            name = "findAllPhoneWithEmployee",
-//            query="select p from Phone p where p.em like :employee")
+            query="select p from Phone p where p.phoneNumber like :phoneNumber")
 })
 @Table(name = "phone")
 public class Phone extends ModelBase implements Serializable {

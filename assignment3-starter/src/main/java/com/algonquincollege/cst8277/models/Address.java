@@ -2,7 +2,7 @@
  * File: Address.java
  * Course materials (19W) CST 8277
  * @author Mike Norman
- * (Modified) @date 2019 03
+ * (Modified by Chenxiao Cui and Lei Cao) @date 2019 03
  *
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
@@ -44,15 +44,14 @@ public class Address extends ModelBase implements Serializable {
     /** explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    // TODO - additional persistent field
+    // Additional persistent field
     protected String city;
     protected String country;
     protected String postal;
     protected String state;
     protected String street;
     protected Employee employee;
-    //protected int addrVersion;
-    
+        
     @OneToOne(mappedBy = "address", cascade={CascadeType.ALL})
     public Employee getEmployee() {
         return employee;

@@ -2,7 +2,7 @@
  * File: Project.java
  * Course materials (19W) CST 8277
  * @author Mike Norman
- * (Modified) @date 2019 03
+ * (Modified by Chenxiao Cui and Lei Cao) @date 2019 03
  *
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
@@ -19,19 +19,16 @@ package com.algonquincollege.cst8277.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-
 
 /**
  * The Project class demonstrates:
  * <ul>
  * <li>Generated Id
  * <li>Version locking
- * <li>ManyToMany mapping
+ * <li>ManyToMany mapping with Employee
  * </ul>
  */
 @Entity

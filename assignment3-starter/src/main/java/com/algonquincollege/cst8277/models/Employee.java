@@ -3,7 +3,7 @@
  * File: Employee.java
  * Course materials (19W) CST 8277
  * @author Mike Norman
- * (Modified) @date 2019 03
+ * (Modified by Chenxiao Cui and Lei Cao) @date 2019 03
  *
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
@@ -39,9 +39,9 @@ import javax.persistence.Table;
  * <ul>
  * <li>Generated Id
  * <li>Version locking
- * <li>OneToOne relationship
- * <li>OneToMany relationship
- * <li>ManyToMany relationship
+ * <li>OneToOne relationship with Address
+ * <li>OneToMany relationship with Phone
+ * <li>ManyToMany relationship with Project
  * </ul>
  */
 @Entity
@@ -61,7 +61,7 @@ public class Employee extends ModelBase implements Serializable {
     /** explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    // TODO - additional persistent field
+    // Additional persistent field
     protected String firstName;
     protected String lastName;
     protected double salary;   
@@ -76,7 +76,7 @@ public class Employee extends ModelBase implements Serializable {
         super();
     }
     
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "ADDR_ID",referencedColumnName = "id")
     public Address getAddress() {
         return address;
