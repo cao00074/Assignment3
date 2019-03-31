@@ -33,11 +33,17 @@ import javax.persistence.Table;
 @Entity
 @NamedQueries({
     @NamedQuery(
-            name = "findAllEmployeesWithPostal",
+            name = "findEmployeesWithPostal",
             query = "select a from Address a where a.postal like :postal"),
     @NamedQuery(
             name = "countAddress",
-            query = "select count(a) from Address a")
+            query = "select count(a) from Address a"),
+    @NamedQuery(
+            name = "findEmployeesByStreet",
+            query = "select a from Address a where a.street like :street"),
+    @NamedQuery(
+            name = "findEmployeesInNepean",
+            query = "select a from Address a where a.city like :city") 
 })
 @Table(name = "address")
 public class Address extends ModelBase implements Serializable {
