@@ -242,7 +242,7 @@ public class EmployeePhonesTestSuite implements TestSuiteConstants {
      * Test getting the employee who has the phone
      */
     @Test
-    public void _07_test_read_empoyee_by_phone() {        
+    public void _07_test_read_employee_by_phone() {        
         EntityManager em = emf.createEntityManager();
         ListAppender<ILoggingEvent> listAppender = attachListAppender(eclipselinkSqlLogger, ECLIPSELINK_LOGGING_SQL);
         Phone phone = (Phone) em.createNamedQuery("findPhoneWithNumber").setParameter("phoneNumber","343-123-4567").getSingleResult();
