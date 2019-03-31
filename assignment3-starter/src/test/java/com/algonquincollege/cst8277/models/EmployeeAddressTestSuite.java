@@ -52,26 +52,7 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
      */
     public static EntityManagerFactory emf;
     public static Server server;
-
-    /**
-     * Database environment set up, runs before class.
-     */
     
-    @BeforeClass
-    public static void oneTimeSetUp() {
-        try {
-            logger.debug("oneTimeSetUp");
-            // create in-process H2 server so we can 'see' into database
-            // use "jdbc:h2:tcp://localhost:9092/mem:assignment3-testing" in Db Perspective
-            // (connection in .dbeaver-data-sources.xml so should be immediately useable
-            server = Server.createTcpServer().start();
-            emf = buildEntityManagerFactory(_thisClaz.getSimpleName());
-        }
-        catch (Exception e) {
-            logger.error("something went wrong building EntityManagerFactory", e);
-        }
-    }
-
     /**
      * SQL statements for checking actual SQL for every test case.
      */
@@ -97,6 +78,27 @@ public class EmployeeAddressTestSuite implements TestSuiteConstants {
             "SELECT ID, CITY, COUNTRY, POSTAL, STATE, STREET, VERSION FROM address WHERE STREET LIKE ?";
     private static final String SELECT_EMPLOYEE_IN_NEPEAN = 
             "SELECT ID, CITY, COUNTRY, POSTAL, STATE, STREET, VERSION FROM address WHERE CITY LIKE ?";   
+
+    /**
+     * Database environment set up, runs before class.
+     */
+    
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        try {
+            logger.debug("oneTimeSetUp");
+            // create in-process H2 server so we can 'see' into database
+            // use "jdbc:h2:tcp://localhost:9092/mem:assignment3-testing" in Db Perspective
+            // (connection in .dbeaver-data-sources.xml so should be immediately useable
+            server = Server.createTcpServer().start();
+            emf = buildEntityManagerFactory(_thisClaz.getSimpleName());
+        }
+        catch (Exception e) {
+            logger.error("something went wrong building EntityManagerFactory", e);
+        }
+    }
+
+
     
     /**
      * Test Address table is not empty at start
