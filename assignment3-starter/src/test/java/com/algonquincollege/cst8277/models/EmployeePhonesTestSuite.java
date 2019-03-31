@@ -51,7 +51,7 @@ public class EmployeePhonesTestSuite implements TestSuiteConstants {
     public static Server server;
 
     /**
-     * JPQL statements for checking actual SQL for every test case.
+     * SQL statements for checking actual SQL for every test case.
      */
     private static final String SELECT_EMPLOYEE =
             "SELECT ID, FIRSTNAME, LASTNAME, SALARY, VERSION, ADDR_ID FROM employee WHERE (ID = ?)";
