@@ -22,6 +22,9 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 /**
  * The Project class demonstrates:
@@ -32,6 +35,14 @@ import javax.persistence.Table;
  * </ul>
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "countProject",       
+        query = "select count(p) from Project p"),
+    @NamedQuery(name = "countEmployee",       
+        query = "select count(e) from Employee e"),
+    @NamedQuery(name = "countAddress",       
+        query = "select count(a) from Address a")
+})
 @Table(name = "project")
 public class Project extends ModelBase implements Serializable {
     /** explicit set serialVersionUID */
@@ -57,6 +68,7 @@ public class Project extends ModelBase implements Serializable {
     public Project() {
     }
 
+    @Column(name = "DESCRIPTION")
     public String getDescription() {
         return description;
     }
@@ -66,6 +78,7 @@ public class Project extends ModelBase implements Serializable {
         this.description = description;
     }
 
+    @Column(name = "NAME")
     public String getName() {
         return name;
     }
